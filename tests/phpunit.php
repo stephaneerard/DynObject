@@ -4,7 +4,7 @@ namespace se\DynObject\Test;
 
 require 'PHPUnit/Autoload.php';
 require 'PHPUnit/Extensions/SeleniumTestCase.php';
-require 'autoload.php';
+require __DIR__ . '/../autoload.php';
 
 use se\DynObject\Autoloader;
 
@@ -15,7 +15,7 @@ class PhpunitRunner
 	public function run()
 	{
 		$files = array();
-		$dir = new \DirectoryIterator(__DIR__ . '/tests');
+		$dir = new \DirectoryIterator(__DIR__);
 		foreach($dir as $file)
 		{
 			if($file->getType() != 'file') continue;
@@ -28,7 +28,7 @@ class PhpunitRunner
 
 		$runner = new \PHPUnit_TextUI_TestRunner();
 
-		require __DIR__ . '/tests/DynMethodTestSuite.php';
+		require __DIR__ . '/DynMethodTestSuite.php';
 
 		$suite = new DynMethodTestSuite();
 
