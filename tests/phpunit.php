@@ -4,7 +4,7 @@ namespace se\DynObject\Test;
 
 require 'PHPUnit/Autoload.php';
 require 'PHPUnit/Extensions/SeleniumTestCase.php';
-require __DIR__ . '/../autoload.php';
+require __DIR__ . '/bootstrap.php';
 
 use se\DynObject\Autoloader;
 

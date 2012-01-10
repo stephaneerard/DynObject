@@ -47,11 +47,11 @@ class DynamicMethod extends DynamicObjectFeature implements DynamicMethodInterfa
 	public function call()
 	{
 		$args = func_get_args();
-		$args = $this->executeListeners('before', 'call', $args);
+		$this->executeListeners('before', 'call', array_merge(array($this->getObject()), $args));
 		$result = call_user_func_array($this->_impls[$this->_impl], array_merge(array($this->getObject()), $args));
-		$filter = $this->executeListeners('after', 'call', array('args' => $args, 'result' => $result));
+		$this->executeListeners('after', 'call', array_merge(array($this->getObject(), $result), $args));
 		
-		$this->_result = $filter['result'];
+		$this->_result = $result;
 		return $this;
 	}
 	

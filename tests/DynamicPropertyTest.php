@@ -11,7 +11,9 @@ class DynamicPropertyTestCase extends \PHPUnit_Framework_TestCase
 	public function testNew()
 	{
 		$new = DynamicObject::instanciate();
-		$this->assertInstanceOf('se\DynObject\DynamicObject', $new);
+		$property = $new->property('name');
+		$this->assertInstanceOf('se\DynObject\DynamicProperty', $property);
+		$this->assertEquals($property->getObject(), $new);
 	}
 
 	public function testPropertyWithGetterAndSetterThenSetAndGet()
@@ -226,11 +228,56 @@ class DynamicPropertyTestCase extends \PHPUnit_Framework_TestCase
 			return 'Stephane';
 		})
 		;
-		
+
 		$value = $obj->get('name');
 		$this->assertEquals('Stephane', $value);
 	}
 
+	/**
+	 *
+	 */
+	public function testGetInexistantPropertyGetGivenDefault()
+	{
+		$test = $this;
+		$obj = $this->getDynamicObject();
+
+		$value = $obj->get('name', 'default');
+		$this->assertEquals('default', $value);
+	}
+
+	/**
+	 * @expectedException \LogicException
+	 */
+	public function testCallRawGetOnPropertyWhenLocked()
+	{
+		$test = $this;
+		$obj = $this->getDynamicObject();
+		$obj
+		->property('name')
+		->withGetter()
+		->withSetter()
+		;
+
+		$property = $obj->property('name');
+		$property->rawGet();
+	}
+
+	/**
+	 * @expectedException \LogicException
+	 */
+	public function testCallRawSetOnPropertyWhenLocked()
+	{
+		$test = $this;
+		$obj = $this->getDynamicObject();
+		$obj
+		->property('name')
+		->withGetter()
+		->withSetter()
+		;
+
+		$property = $obj->property('name');
+		$property->rawSet('test');
+	}
 
 
 
@@ -251,6 +298,3 @@ class DynamicPropertyTestCase extends \PHPUnit_Framework_TestCase
 		return DynamicObject::instanciate($class);
 	}
 }
-
-
-class TestClass{}

@@ -40,7 +40,7 @@ class DynamicProperty extends DynamicObjectFeature implements DynamicPropertyInt
 	{
 		if($this->_locked)
 		{
-			throw new LogicException();
+			throw new \LogicException();
 		}
 		return $this->_value;
 	}
