@@ -129,10 +129,6 @@ class DynamicProperty extends DynamicObjectFeature implements DynamicPropertyInt
 	{
 		if(null !== $this->_getter) return $this;
 		$this->_getter = function(DynamicPropertyInterface $property){
-			if(!$property->isDefined() && $property->hasDefault())
-			{
-				return $property->getDefault();
-			}
 			return $property->rawGet();
 		};
 		return $this;

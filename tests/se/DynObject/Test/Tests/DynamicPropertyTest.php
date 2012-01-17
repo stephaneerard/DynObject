@@ -1,10 +1,10 @@
 <?php
 
-namespace se\DynObject\Test;
+namespace se\DynObject\Test\Tests;
 
 use se\DynObject\DynamicProperty;
-
 use se\DynObject\DynamicObject;
+use se\DynObject\Test\Libs\TestClass;
 
 class DynamicPropertyTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -172,7 +172,7 @@ class DynamicPropertyTestCase extends \PHPUnit_Framework_TestCase
 		->property('name')
 		->withGetter()
 		->withSetter()
-		->setType('TestClass')
+		->setType('se\DynObject\Test\Libs\TestClass')
 		;
 
 		$obj->set('name', 'value');
@@ -189,7 +189,7 @@ class DynamicPropertyTestCase extends \PHPUnit_Framework_TestCase
 		->property('name')
 		->withGetter()
 		->withSetter()
-		->setType('se\DynObject\Test\TestClass')
+		->setType('se\DynObject\Test\Libs\TestClass')
 		;
 
 		$obj->set('name', new TestClass());
@@ -280,6 +280,32 @@ class DynamicPropertyTestCase extends \PHPUnit_Framework_TestCase
 	}
 
 
+	public function testGetReflection()
+	{
+		$obj = $this->getDynamicObject();
+		$obj
+		->property('name')
+		->withGetter()
+		->withSetter()
+		;
+
+		$ref = $obj->property('name')->getReflection();
+
+		$this->assertInstanceOf('ReflectionProperty', $ref);
+	}
+	
+	public function testGetDefaultWhenDefinedPossible()
+	{
+		$obj = $this->getDynamicObject();
+		$obj
+		->property('name')
+		->withGetter()
+		->withSetter()
+		->setDefault('test')
+		;
+		
+		$this->assertEquals('test', $obj->get('name'));		
+	}
 
 	/**************************
 	 *

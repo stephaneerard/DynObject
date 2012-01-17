@@ -2,6 +2,9 @@
 
 namespace se\DynObject;
 
+use se\DynObject\Exceptions\MethodImplementationNotFoundException;
+use se\DynObject\Exceptions\MethodNotFoundException;
+
 class DynamicMethod extends DynamicObjectFeature implements DynamicMethodInterface
 {
 	protected $_impls = array();
@@ -20,7 +23,7 @@ class DynamicMethod extends DynamicObjectFeature implements DynamicMethodInterfa
 		}
 		return $this;
 	}
-	
+
 	/**
 	 * (non-PHPdoc)
 	 * @see DynamicMethodInterface::setImplementation()
@@ -30,7 +33,7 @@ class DynamicMethod extends DynamicObjectFeature implements DynamicMethodInterfa
 		$this->_impl = $name;
 		return $this;
 	}
-	
+
 	/**
 	 * (non-PHPdoc)
 	 * @see DynamicMethodInterface::getImplementation()
@@ -39,40 +42,52 @@ class DynamicMethod extends DynamicObjectFeature implements DynamicMethodInterfa
 	{
 		return $this->_impl;
 	}
-	
+
 	/**
 	 * (non-PHPdoc)
 	 * @see DynamicMethodInterface::call()
 	 */
 	public function call()
 	{
-		$args = func_get_args();
-		$this->executeListeners('before', 'call', array_merge(array($this->getObject()), $args));
-		$result = call_user_func_array($this->_impls[$this->_impl], array_merge(array($this->getObject()), $args));
+		if(!isset($this->_impls[$this->_impl]))
+		{
+			throw new MethodImplementationNotFoundException();
+		}
+		if(func_num_args()>1){
+			$args = func_get_args();
+		}
+		else
+		{
+			$args = (array) func_get_arg(0);
+		}
+		$passedArgs = array_merge(array($this->getObject()), $args);
+		$this->executeListeners('before', 'call', $passedArgs);
+		$result = call_user_func_array($this->_impls[$this->_impl], $passedArgs);
 		$this->executeListeners('after', 'call', array_merge(array($this->getObject(), $result), $args));
-		
+
 		$this->_result = $result;
 		return $this;
 	}
-	
+
 	public function result()
 	{
 		return $this->_result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param string $name
 	 * @return ReflectionFunction
 	 */
 	public function getReflection($name = null)
 	{
 		$name = null === $name ? $this->_impl : $name;
-		return new ReflectionFunction($this->_impls[$name]);
+		return new \ReflectionFunction($this->_impls[$name]);
 	}
-	
-	public function __invoke($args)
+
+	public function __invoke()
 	{
-		$this->call($args);
+		$args = func_get_args();
+		return $this->call($args);
 	}
 }

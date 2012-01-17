@@ -1,6 +1,8 @@
 <?php
 namespace se\DynObject;
 
+use se\DynObject\Exceptions\MethodNotFoundException;
+
 class DynamicObject implements DynamicObjectInterface
 {
 
@@ -39,7 +41,7 @@ class DynamicObject implements DynamicObjectInterface
 	
 	public function hasProperty($name)
 	{
-		return $this->_hasFeature('method', $name);
+		return $this->_hasFeature('property', $name);
 	}
 	
 	protected function _hasFeature($type, $name)
@@ -57,6 +59,7 @@ class DynamicObject implements DynamicObjectInterface
 				$this->_dynamics[$type][$name]->setObject($this);
 			}
 			$feature = $this->_dynamics[$type][$name];
+			$feature->setObject($this);
 		}
 		else
 		{
@@ -93,7 +96,7 @@ class DynamicObject implements DynamicObjectInterface
 		$method = $this->_dynamics['method'][$method];
 		if($impl)
 		{
-			$method->setImplementation($impl);
+			$method->setCurrentImplementation($impl);
 		}
 		
 		$method->call($args);
@@ -113,10 +116,10 @@ class DynamicObject implements DynamicObjectInterface
 			return call_user_func_array($this->_methodNotFoundHandler, array($this, $method, $args, $result, $impl));
 		}
 		
-		throw new BadMethodCallException();
+		throw new MethodNotFoundException();
 	}
 	
-	public function setMethodNoutFoundHandler($function)
+	public function setMethodNotFoundHandler($function)
 	{
 		$this->_methodNotFoundHandler = $function;
 		return $this;

@@ -1,7 +1,4 @@
 <?php
-require __DIR__ . '/../autoload.php';
-require __DIR__ . '/libs/TestClass.class.php';
-
-use se\DynObject\Autoloader;
-
-Autoloader::create()->register();
+require 'PHPUnit/Autoload.php';
+$loader = require __DIR__ . '/../vendor/.composer/autoload.php';
+$loader->add('se\\DynObject\Test', __DIR__);
